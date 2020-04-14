@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" >
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <title>Items</title>
+        <style>
+            .description {
+                display: inline-block;
+            }
+            h2, form {
+                margin: 20px auto;
+            }
+            form {
+                margin-bottom: 40px;
+            }
+            #desc {
+                width: 450px;
+            }
+            button {
+                margin-bottom: 5px;
+            }
+        </style>
+        <script>
+            function getItems() {
+                let regulator = sortItems();
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://localhost:8088/items/show',
+                    dataType: "json",
+                    data: "regulator=" + regulator,
+                    success: (function(response) {
+                        editPage(response);
+                    }),
+                    error: (function(err) {
+                        alert(err);
+                    })
+                });
+            }
+
+            function sendItem() {
+                if (validate()) {
+                    let desc = $('#desc').val();
+                    let regulator = sortItems();
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:8088/items/create',
+                        data: { desc: desc, regulator: regulator },
+                        dataType: "json",
+                        success: (function(response) {
+                            editPage(response);
+                        }),
+                        error: (function(err) {
+                            alert(err);
+                        })
+                    });
+                }
+            }
+
+            function validate() {
+                let result = false;
+                let desc = $('#desc').val();
+                if (desc === '') {
+                    alert('Сформируйте задание!');
+                } else {
+                    result = true;
+                }
+                return result;
+            }
+
+            function sortItems() {
+                let regulator = "0";
+                if ($('input#sort').prop('checked') === true) {
+                    regulator = "1";
+                }
+                return regulator;
+            }
+
+            function editPage(response) {
+                $('table tbody').find('tr.not-empty').remove();
+                $.each(response, function (key, content) {
+                    if (content.done === true) {
+                        $('table tbody tr:last').before(
+                            '<tr class="not-empty">' +
+                            '<td>' + content.id + '</td>' +
+                            '<td>' + content.description + '</td>' +
+                            '<td>' + content.created + '</td>' +
+                            '<td><input onclick="findChecked(id)" class="status" id="' + content.id + '" type="checkbox" checked/></td>' +
+                            '</tr>'
+                        );
+                    } else {
+                        $('table tbody tr:last').before(
+                            '<tr class="not-empty">' +
+                            '<td>' + content.id + '</td>' +
+                            '<td>' + content.description + '</td>' +
+                            '<td>' + content.created + '</td>' +
+                            '<td><input onclick="findChecked(id)" class="status" id="' + content.id + '" type="checkbox"/></td>' +
+                            '</tr>'
+                        );
+                    }
+                });
+            }
+
+            function findChecked(id) {
+                let done = "0";
+                if ($('input.status#' + id).prop('checked') === true) {
+                    done = "1";
+                }
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://localhost:8088/items/update',
+                    data: {id: id, done: done},
+                    dataType: "json"
+                });
+            }
+        </script>
+    </head>
+    <body onload="getItems()">
+        <div class="container">
+            <div class="row pt-2">
+                <h2>Добавить новое задание</h2>
+            </div>
+            <div class="row">
+                <form>
+                    <div class="description">
+                        <label for="desc"></label>
+                        <input type="text" class="form-control" id="desc" placeholder="Задание">
+                    </div>
+                    <button type="button" class="btn btn-success" onclick="sendItem()">Отправить</button>
+                </form>
+            </div>
+            <section>
+                <table class="table table-bordered">
+                    <tr>
+                        <td>
+                            <label for="sort">Показать все задачи</label>
+                            <input onclick="getItems()" id="sort" type="checkbox" checked/>
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="result">ID</th>
+                            <th class="result">Задание</th>
+                            <th class="result">Время создания</th>
+                            <th class="result">Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr></tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </body>
+</html>

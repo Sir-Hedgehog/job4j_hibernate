@@ -1,9 +1,8 @@
-package ru.job4j.models;
+package ru.job4j.clients;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.query.Query;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -11,8 +10,8 @@ import java.util.GregorianCalendar;
 
 /**
  * @author Sir-Hedgehog (mailto:quaresma_08@mail.ru)
- * @version 1.0
- * @since 08.03.2020
+ * @version 2.0
+ * @since 12.04.2020
  */
 
 public class HibernateRun {
@@ -23,8 +22,8 @@ public class HibernateRun {
      */
 
     public static void main(String[] args) {
-        //start HQL
-        SessionFactory factory = new Configuration().configure().buildSessionFactory();
+        //start Hibernate
+        SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
         Session session = factory.openSession();
         session.beginTransaction();
         Client client = new Client();
@@ -33,7 +32,7 @@ public class HibernateRun {
         client.setName("Виталий");
         client.setExpired(new GregorianCalendar(2020, 3, 7));
         session.save(client);
-        List<Client> sample1 = session.createQuery("from Client where name = 'Виталий'").list();
+        List<Client> sample1 = session.createQuery("from Client where name = 'Виталий'", Client.class).list();
         for (Client user : sample1) {
             System.out.println(user.getId());
             System.out.println(user.getName());
@@ -43,7 +42,7 @@ public class HibernateRun {
         client.setName("Иннокентий");
         client.setExpired(new GregorianCalendar(2012, 11, 21));
         session.update(client);
-        List<Client> sample2 = session.createQuery("from Client where name = 'Иннокентий'").list();
+        List<Client> sample2 = session.createQuery("from Client where name = 'Иннокентий'", Client.class).list();
         for (Client user : sample2) {
             System.out.println(user.getId());
             System.out.println(user.getName());
@@ -51,14 +50,13 @@ public class HibernateRun {
         }
         //delete user and select all, but list is empty
         session.delete(client);
-        Query sample3 = session.createQuery("from Client");
-        List<Client> clients = sample3.list();
+        List<Client> clients = session.createQuery("from Client", Client.class).list();
         for (Client user : clients) {
             System.out.println(user.getId());
             System.out.println(user.getName());
             System.out.println(DATE_FORMAT_DASH_SEPARATED.format(user.getExpired().getTime()));
         }
-        //destroy HQL
+        //destroy Hibernate
         session.getTransaction().commit();
         session.close();
         factory.close();

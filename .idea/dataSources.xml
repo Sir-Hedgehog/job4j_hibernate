@@ -11,5 +11,25 @@ C:/projects/job4j_hibernate/src/main/resources/hibernate.cfg.xml</remarks>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://127.0.0.1:5432/Clients</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="clients.cfg.xml/Hibernate" uuid="92bf156c-c55c-45bf-910a-742c4bd38da6">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>Hibernate
+
+C:/projects/job4j_hibernate/src/main/resources/clients.cfg.xml</remarks>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://127.0.0.1:5432/Clients</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="items.cfg.xml/Hibernate" uuid="68d7a49f-cc04-47d3-bae9-b6f2610d81b2">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>Hibernate
+
+C:/projects/job4j_hibernate/src/main/resources/items.cfg.xml</remarks>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://127.0.0.1:5432/Clients</jdbc-url>
+    </data-source>
   </component>
 </project>
