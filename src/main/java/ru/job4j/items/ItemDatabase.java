@@ -2,27 +2,27 @@ package ru.job4j.items;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author Sir-Hedgehog (mailto:quaresma_08@mail.ru)
- * @version 1.0
- * @since 13.04.2020
+ * @version 2.0
+ * @since 14.04.2020
  */
 
 public class ItemDatabase implements Store {
     private static final ItemDatabase INSTANCE = new ItemDatabase();
-    private Session session;
+    private SessionFactory factory;
 
     /**
      * В конструкторе происходит инициализация соединения и начало транзакции через конфигурационные файлы Hibernate
      */
 
     public ItemDatabase() {
-        SessionFactory factory = new Configuration().configure("items.cfg.xml").buildSessionFactory();
-        session = factory.openSession();
-        session.beginTransaction();
+        factory = new Configuration().configure("items.cfg.xml").buildSessionFactory();
     }
 
     /**
@@ -44,7 +44,7 @@ public class ItemDatabase implements Store {
         Item item = new Item();
         item.setDescription(description);
         item.setDone(false);
-        session.save(item);
+        this.template(session -> session.save(item));
     }
 
     /**
@@ -55,15 +55,17 @@ public class ItemDatabase implements Store {
 
     @Override
     public void updateItem(String id, String done) {
-        List<Item> elect = session.createQuery("from Item where id = " + id, Item.class).list();
-        boolean result = false;
-        if (done.equals("1")) {
-            result = true;
-        }
-        elect.get(0).setDone(result);
-        session.update(elect.get(0));
-        session.getTransaction().commit();
-        session.beginTransaction();
+        this.template(
+                session -> {
+                    List<Item> elect = session.createQuery("from Item where id = " + id, Item.class).list();
+                    boolean result = false;
+                    if (done.equals("1")) {
+                        result = true;
+                    }
+                    elect.get(0).setDone(result);
+                    session.update(elect.get(0));
+                    return true;
+        });
     }
 
     /**
@@ -76,10 +78,31 @@ public class ItemDatabase implements Store {
     public List<Item> getItems(String regulator) {
         List<Item> result;
         if (regulator.equals("1")) {
-            result = session.createQuery("from Item", Item.class).list();
+            result = this.template(session -> session.createQuery("from Item", Item.class).list());
         } else {
-            result = session.createQuery("from Item where done = false", Item.class).list();
+            result = this.template(session -> session.createQuery("from Item where done = false", Item.class).list());
         }
         return result;
+    }
+
+    /**
+     * Метод формирует общий шаблон для редактирования БД
+     * @param command - данные созданной сессии с получением на выходе отредактированную таблицу или успешность операции
+     * @return - отредактированная таблица или успешность операции (в зависимости от контекста)
+     */
+
+    private <T> T template(final Function<Session, T> command) {
+        final Session session = factory.openSession();
+        final Transaction transaction = session.beginTransaction();
+        try {
+            T result = command.apply(session);
+            transaction.commit();
+            return result;
+        } catch (final Exception exception) {
+            session.getTransaction().rollback();
+            throw exception;
+        } finally {
+            session.close();
+        }
     }
 }
