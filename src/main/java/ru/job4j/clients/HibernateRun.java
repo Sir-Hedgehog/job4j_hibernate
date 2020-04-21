@@ -3,62 +3,86 @@ package ru.job4j.clients;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.GregorianCalendar;
 
 /**
  * @author Sir-Hedgehog (mailto:quaresma_08@mail.ru)
- * @version 2.0
- * @since 12.04.2020
+ * @version 3.0
+ * @since 21.04.2020
  */
 
 public class HibernateRun {
-    private static final DateFormat DATE_FORMAT_DASH_SEPARATED = new SimpleDateFormat("yyyy-MM-dd");
+    private static Session session;
+    private static SessionFactory factory;
 
-    /**
-     * Метод реализует основные операции в базе данных при использовании Hibernate
-     */
+    private static void createHibernateSession() {
+        factory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+        session = factory.openSession();
+        session.beginTransaction();
+    }
+
+    private static void closeHibernateSession() {
+        session.getTransaction().commit();
+        session.close();
+        factory.close();
+    }
 
     public static void main(String[] args) {
         //start Hibernate
-        SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
-        Session session = factory.openSession();
-        session.beginTransaction();
+        createHibernateSession();
+        addClient();
+        getClients();
+        closeHibernateSession();
+
+        //update user and select this client
+        createHibernateSession();
+        updateClient();
+        getClients();
+        closeHibernateSession();
+
+        //delete user and select all, but list is empty
+        createHibernateSession();
+        deleteClient();
+        getClients();
+        closeHibernateSession();
+
+    }
+
+    private static void addClient() {
         Client client = new Client();
-        //create user and select this client
         client.setId(1);
         client.setName("Виталий");
         client.setExpired(new GregorianCalendar(2020, 3, 7));
         session.save(client);
-        List<Client> sample1 = session.createQuery("from Client where name = 'Виталий'", Client.class).list();
-        for (Client user : sample1) {
-            System.out.println(user.getId());
-            System.out.println(user.getName());
-            System.out.println(DATE_FORMAT_DASH_SEPARATED.format(user.getExpired().getTime()));
+    }
+
+    private static void updateClient() {
+        Client updatedClient = null;
+
+        List<Client> clients = session.createQuery("from Client where name = 'Виталий'", Client.class).list();
+        for (Client client : clients) {
+            client.setName("Иннокентий");
+            client.setExpired(new GregorianCalendar(2012, 11, 21));
+            updatedClient = client;
         }
-        //update user and select this client
-        client.setName("Иннокентий");
-        client.setExpired(new GregorianCalendar(2012, 11, 21));
-        session.update(client);
-        List<Client> sample2 = session.createQuery("from Client where name = 'Иннокентий'", Client.class).list();
-        for (Client user : sample2) {
-            System.out.println(user.getId());
-            System.out.println(user.getName());
-            System.out.println(DATE_FORMAT_DASH_SEPARATED.format(user.getExpired().getTime()));
+
+        session.update(updatedClient);
+    }
+
+    private static void deleteClient() {
+        Client deletedClient = null;
+
+        List<Client> clients = session.createQuery("from Client where name = 'Иннокентий'", Client.class).list();
+        for (Client client : clients) {
+            deletedClient = client;
         }
-        //delete user and select all, but list is empty
-        session.delete(client);
-        List<Client> clients = session.createQuery("from Client", Client.class).list();
-        for (Client user : clients) {
-            System.out.println(user.getId());
-            System.out.println(user.getName());
-            System.out.println(DATE_FORMAT_DASH_SEPARATED.format(user.getExpired().getTime()));
-        }
-        //destroy Hibernate
-        session.getTransaction().commit();
-        session.close();
-        factory.close();
+
+        session.delete(deletedClient);
+    }
+
+    private static void getClients() {
+        List<Client> sample = session.createQuery("from Client", Client.class).list();
+        System.out.println(sample.toString());
     }
 }
