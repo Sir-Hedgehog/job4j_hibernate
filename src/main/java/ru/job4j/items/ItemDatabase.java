@@ -22,7 +22,7 @@ public class ItemDatabase implements Store {
      */
 
     public ItemDatabase() {
-        factory = new Configuration().configure("items.cfg.xml").buildSessionFactory();
+        factory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
     }
 
     /**

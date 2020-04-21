@@ -4,14 +4,12 @@
     <facet type="hibernate" name="Hibernate">
       <configuration>
         <datasource-map>
-          <unit-entry name="Clients.cfg.xml" value="92bf156c-c55c-45bf-910a-742c4bd38da6" />
-          <unit-entry name="hibernate.cfg.xml" value="08b2532c-6803-48cc-b550-ed2d21225261" />
-          <unit-entry name="items.cfg.xml" value="68d7a49f-cc04-47d3-bae9-b6f2610d81b2" />
-          <unit-entry name="items.hbm.xml" />
+          <unit-entry name="automobiles.cfg.xml" value="724b3762-e960-4f16-8881-0e0a41e76d75" />
+          <unit-entry name="hibernate.cfg.xml" value="68d7a49f-cc04-47d3-bae9-b6f2610d81b2" />
         </datasource-map>
         <naming-strategy-map />
+        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/src/main/resources/automobiles.cfg.xml" />
         <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/src/main/resources/hibernate.cfg.xml" />
-        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/src/main/resources/items.cfg.xml" />
       </configuration>
     </facet>
     <facet type="web" name="Web">
@@ -88,5 +86,6 @@
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.11.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.11.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.8" level="project" />
   </component>
 </module>
