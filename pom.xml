@@ -3,7 +3,7 @@
     <groupId>ru.job4j</groupId>
     <artifactId>junior</artifactId>
     <version>1.0</version>
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
     <name>job4j_hibernate</name>
     <url>http://job4j.ru/</url>
 
