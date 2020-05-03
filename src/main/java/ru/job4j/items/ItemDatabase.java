@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 public class ItemDatabase implements Store {
     private static final ItemDatabase INSTANCE = new ItemDatabase();
-    private SessionFactory factory;
+    private final SessionFactory factory;
 
     /**
      * В конструкторе происходит инициализация соединения и начало транзакции через конфигурационные файлы Hibernate
