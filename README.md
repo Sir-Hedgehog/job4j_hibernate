@@ -19,6 +19,7 @@ In the every program there is showed the basic principles of Hibernate realizati
 * Log4j;
 * Lombok;
 * PostgreSQL;
+* JDBC; 
 * Servlet;
 * Hibernate;
 * HTML;
@@ -27,6 +28,8 @@ In the every program there is showed the basic principles of Hibernate realizati
 * Ajax;
 * JQuery;
 * Bootstrap;
+* Gson;
+* Tomcat Server
 
 ## Author
 Sergey Gromovoy
